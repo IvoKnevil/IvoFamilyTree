@@ -41,13 +41,13 @@ namespace IvoFamilyTree.Utilities
             {
                 //Character goes on adventure if user chooses the first option in the menu. 
                 case 1:
-
+                    GetPersonInfo(2);
                     ClearScreen();
                     break;
 
-                //the player choses to look at character details.
+                //the user choses to look add person.
                 case 2:
-
+                    AddPerson();
                     ClearScreen();
                     break;
 
@@ -58,7 +58,7 @@ namespace IvoFamilyTree.Utilities
 
 
                 case 4:
-                    
+
                     break;
 
                 case 5:
@@ -72,10 +72,6 @@ namespace IvoFamilyTree.Utilities
             }
 
         }
-
-
-
-
 
 
 
@@ -151,31 +147,31 @@ namespace IvoFamilyTree.Utilities
 
         private void AddTableData()
         {
-            CreateData("Clint", "Eastwood", 0, 0, 1925);
-            CreateData("Anna", "Eastwood", 0, 0, 1935);
-            CreateData("Arnold", "Schwarzenegger", 0, 0, 1945);
-            CreateData("Gloria", "Schwarzenegger", 0, 0, 1952);
-            CreateData("Richard", "Spelling", 0, 0, 1940);
-            CreateData("Maria", "Spelling", 0, 0, 1945);
-            CreateData("Bob", "Ferguson", 0, 0, 1943);
-            CreateData("Ornela", "Ferguson", 0, 0, 1944);
-            CreateData("Adolfo", "Dos Santos", 0, 0, 1940);
-            CreateData("Maria", "Dos Santos", 0, 0, 1940);
-            CreateData("John", "Eastwood", 2, 1, 1962);
-            CreateData("Laura", "Eastwood", 2, 1, 1962);
-            CreateData("Anna", "Schwarzenegger", 4, 3, 1972);
-            CreateData("George", "Spelling", 6, 5, 1973);
-            CreateData("Lina", "Ferguson", 8, 7, 1974);
-            CreateData("Patrick", "Dos Santos", 10, 9, 1976);
-            CreateData("Tim", "Eastwood", 13, 11, 1980);
-            CreateData("Lucia", "Dos Santos", 12, 16, 1982);
-            CreateData("Ben", "Spelling", 15, 1, 1982);
+            AddData("Clint", "Eastwood", 0, 0, 1925);
+            AddData("Anna", "Eastwood", 0, 0, 1935);
+            AddData("Arnold", "Schwarzenegger", 0, 0, 1945);
+            AddData("Gloria", "Schwarzenegger", 0, 0, 1952);
+            AddData("Richard", "Spelling", 0, 0, 1940);
+            AddData("Maria", "Spelling", 0, 0, 1945);
+            AddData("Bob", "Ferguson", 0, 0, 1943);
+            AddData("Ornela", "Ferguson", 0, 0, 1944);
+            AddData("Adolfo", "Dos Santos", 0, 0, 1940);
+            AddData("Maria", "Dos Santos", 0, 0, 1940);
+            AddData("John", "Eastwood", 2, 1, 1962);
+            AddData("Laura", "Eastwood", 2, 1, 1962);
+            AddData("Anna", "Schwarzenegger", 4, 3, 1972);
+            AddData("George", "Spelling", 6, 5, 1973);
+            AddData("Lina", "Ferguson", 8, 7, 1974);
+            AddData("Patrick", "Dos Santos", 10, 9, 1976);
+            AddData("Tim", "Eastwood", 13, 11, 1980);
+            AddData("Lucia", "Dos Santos", 12, 16, 1982);
+            AddData("Ben", "Spelling", 15, 1, 1982);
 
             Console.WriteLine("Added data to the table");
         }
 
 
-        private void CreateData(string firstName, string lastName, int mother, int father, int birthYear)
+        private void AddData(string firstName, string lastName, int mother, int father, int birthYear)
         {
 
             using (var conn = new SqlConnection(connectionString))
@@ -194,7 +190,7 @@ namespace IvoFamilyTree.Utilities
                 }
                 conn.Close();
             }
-            
+
         }
 
 
@@ -224,6 +220,39 @@ namespace IvoFamilyTree.Utilities
             return dt;
         }
 
+
+        private void AddPerson()
+        {
+            Console.Write("Please enter the first name of the person you want to add: ");
+            string firstName = Console.ReadLine();
+            Console.Write("Please enter the last name of the person you want to add: ");
+            string lastName = Console.ReadLine();
+            Console.Write("Please enter the ID of the added persons mother: ");
+            int mother = Convert.ToInt32(Console.ReadLine());
+            Console.Write("Please enter the ID of the added persons father: ");
+            int father = Convert.ToInt32(Console.ReadLine());
+            Console.Write("Please enter the birth year of the added person: ");
+            int birthYear = Convert.ToInt32(Console.ReadLine());
+            AddData(firstName, lastName, mother, father, birthYear);
+            Console.Write("Mother is: ");
+            GetPersonInfo(mother);
+
+
+
+        }
+
+
+        private void GetPersonInfo(int mother)
+        {
+
+            var list = GetDataTable($"SELECT * FROM {databaseName}.[dbo].[{tableName}] WHERE ID = '{mother}'");
+            foreach (item in list)
+            {
+                Console.WriteLine($"{item}");
+            }
+
+
+        }
 
         private void ShowMenu()
         {
