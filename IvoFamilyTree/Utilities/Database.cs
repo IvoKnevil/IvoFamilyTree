@@ -25,7 +25,7 @@ namespace IvoFamilyTree.Utilities
             while (keepPlaying)
             {
                 ShowMenu(); //Calls method to show the main menu
-                ProgramActions(Menu.UserMenuChoice()); //calls method that takes user menu choice. Sends the info to method PlayerMenuChoice in the class Menu.
+                ProgramActions(Menu.UserMenuChoice()); //calls method that takes user menu choice. Sends the info to method UserrMenuChoice in the class Menu.
             }
 
         }
@@ -101,6 +101,7 @@ namespace IvoFamilyTree.Utilities
                 CreateDb();
                 CreateTable();
                 AddTableData();
+                ClearScreen();
             }
 
             else
@@ -140,7 +141,7 @@ namespace IvoFamilyTree.Utilities
         {
             string sql = "CREATE DATABASE " + databaseName;
             ExecuteSQL(sql);
-            Console.WriteLine($"Database {databaseName} created");
+            Console.WriteLine($"1. Database {databaseName} created");
         }
 
 
@@ -158,7 +159,7 @@ namespace IvoFamilyTree.Utilities
                                 ) ON [PRIMARY]";
 
             ExecuteSQL(sql);
-            Console.WriteLine($"Table {tableName} created");
+            Console.WriteLine($"2. Table {tableName} created");
         }
 
 
@@ -184,7 +185,7 @@ namespace IvoFamilyTree.Utilities
             AddData("Lucia", "Dos Santos", 12, 16, 1982);
             AddData("Ben", "Spelling", 15, 1, 1982);
 
-            Console.WriteLine("Added data to the table");
+            Console.WriteLine($"3. Added data to the table {tableName}\n");
         }
 
 
@@ -542,7 +543,7 @@ namespace IvoFamilyTree.Utilities
 
         private void ShowGrandKids()
         {
-            var sql = $"select Id, firstName, lastName, birthYear from {databaseName}.[dbo].[{tableName}] where mother = 0;";
+            var sql = $"select Id, firstName, lastName, birthYear from {databaseName}.[dbo].[{tableName}] where id > 16;";
             var list = GetDataTable(sql);
 
             foreach (DataRow row in list.Rows)

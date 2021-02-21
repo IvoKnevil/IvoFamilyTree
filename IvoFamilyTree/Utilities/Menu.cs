@@ -11,7 +11,7 @@ namespace IvoFamilyTree.Utilities
     class Menu
     {
 
-        private static List<string> programMenu = new List<string>() { "Show all names starting with chosen letter", "Add person", "Remove person", "Change person", "Show grandparents", "Show kids", "Exit program" };
+        private static List<string> programMenu = new List<string>() { "Show all names starting with chosen letter", "Add person", "Remove person", "Change person", "Show grandparents", "Show grandkids", "Exit program" };
         private static int userChoice;
         private static string userInputDescription;
         private static string inputText;
@@ -64,8 +64,6 @@ namespace IvoFamilyTree.Utilities
             return menuChoiceToReturn;
 
         }
-
-
 
 
 
