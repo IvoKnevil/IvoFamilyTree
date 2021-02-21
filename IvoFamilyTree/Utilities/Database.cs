@@ -20,10 +20,10 @@ namespace IvoFamilyTree.Utilities
         public void StartProgram()
         {
 
+            AddMockData();
+
             while (keepPlaying)
             {
-                AddMockData();
-                keepPlaying = false;
                 ShowMenu(); //Calls method to show the main menu
                 ProgramActions(Menu.UserMenuChoice()); //calls method that takes user menu choice. Sends the info to method PlayerMenuChoice in the class Menu.
             }
@@ -38,7 +38,7 @@ namespace IvoFamilyTree.Utilities
             Console.WriteLine($"You've chosen {userMenuChoice[1]}\n");
             switch (userMenuChoice[0])
             {
-                 
+
                 case 1: //Show all names starting with certain letter.
                     Console.Write("Please enter the first letter in first name: ");
                     string letter = Console.ReadLine();
@@ -47,13 +47,13 @@ namespace IvoFamilyTree.Utilities
                     ClearScreen();
                     break;
 
-                
+
                 case 2: //the user choses to add a person.
                     AddPerson();
                     ClearScreen();
                     break;
 
-                
+
                 case 3: //the user choses to delete a person
                     ListAllPeople();
                     Console.Write("Please enter the Id of the person you want to remove: ");
@@ -62,7 +62,7 @@ namespace IvoFamilyTree.Utilities
                     ClearScreen();
                     break;
 
-                
+
                 case 4:
 
                     ChangePerson(); //the user choses to change a person
@@ -71,10 +71,12 @@ namespace IvoFamilyTree.Utilities
 
                 case 5:
                     ShowGrandParents();  //Show grandparents
+                    ClearScreen();
                     break;
 
                 case 6:
-                    keepPlaying = false;  //End program
+                    ShowGrandKids();  //Show grandkids
+                    ClearScreen();
                     break;
 
                 case 7:
@@ -250,13 +252,14 @@ namespace IvoFamilyTree.Utilities
             GetPersonInfo(mother);
             Console.Write("\nFather is: \n");
             GetPersonInfo(father);
+            Console.WriteLine("");
 
         }
 
         private void ListAllPeople()
         {
 
-            var sql = $"select id, firstName, lastName, birthYear from {databaseName}.[dbo].[{tableName}];";
+            var sql = $"SELECT id, firstName, lastName, birthYear FROM {databaseName}.[dbo].[{tableName}] ORDER BY id;";
             var dt = new DataTable();
             var connString = string.Format(connectionString, databaseName);
 
@@ -274,16 +277,13 @@ namespace IvoFamilyTree.Utilities
                 conn.Close();
             }
 
-            foreach (DataRow dataRow in dt.Rows)
+            Console.Clear();
+            foreach (DataRow row in dt.Rows)
             {
-
-                foreach (var item in dataRow.ItemArray)
-                {
-                    Console.WriteLine($"{item}");
-
-                }
-                Console.WriteLine("\n");
+                Console.WriteLine($"{row["Id"]}. {row["firstName"].ToString().Trim()}, {row["lastName"].ToString().Trim()}, birth year: {row["birthYear"]}");
             }
+
+            Console.WriteLine("");
 
         }
 
@@ -498,7 +498,7 @@ namespace IvoFamilyTree.Utilities
         private void ShowAllNames(string letter)
         {
 
-            var sql = $"select firstName, lastName, birthYear from {databaseName}.[dbo].[{tableName}] where firstName like @letter;";
+            var sql = $"select id, firstName, lastName, birthYear from {databaseName}.[dbo].[{tableName}] where firstName like @letter;";
             var dt = new DataTable();
             var connString = string.Format(connectionString, databaseName);
 
@@ -517,13 +517,13 @@ namespace IvoFamilyTree.Utilities
                 conn.Close();
             }
 
-            foreach (DataRow dataRow in dt.Rows)
+            Console.Clear();
+            foreach (DataRow row in dt.Rows)
             {
-                foreach (var item in dataRow.ItemArray)
-                {
-                    Console.WriteLine(item);
-                }
+                Console.WriteLine($"{row["Id"]}. {row["firstName"].ToString().Trim()}, {row["lastName"].ToString().Trim()}, birth year: {row["birthYear"]}");
             }
+
+            Console.WriteLine("");
 
         }
 
@@ -536,6 +536,21 @@ namespace IvoFamilyTree.Utilities
             {
                 Console.WriteLine($"{row["Id"]}. {row["firstName"].ToString().Trim()}, {row["lastName"].ToString().Trim()}, birth year: {row["birthYear"]}");
             }
+
+            Console.WriteLine("");
+        }
+
+        private void ShowGrandKids()
+        {
+            var sql = $"select Id, firstName, lastName, birthYear from {databaseName}.[dbo].[{tableName}] where mother = 0;";
+            var list = GetDataTable(sql);
+
+            foreach (DataRow row in list.Rows)
+            {
+                Console.WriteLine($"{row["Id"]}. {row["firstName"].ToString().Trim()}, {row["lastName"].ToString().Trim()}, birth year: {row["birthYear"]}");
+            }
+
+            Console.WriteLine("");
         }
 
 
