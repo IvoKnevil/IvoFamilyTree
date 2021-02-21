@@ -24,29 +24,76 @@ namespace IvoFamilyTree.Utilities
             {
 
                 AddMockData();
-                ExitProgram();
-                //ShowGameMenu(player); //Calls method to show the main menu
-                //GameActions(Menu.PlayerMenuChoice(player), player); //calls method that takes user menu choice. Sends the info to method PlayerMenuChoice in the class Menu.
+                keepPlaying = false;
+                ShowMenu(); //Calls method to show the main menu
+                ProgramActions(Menu.UserMenuChoice()); //calls method that takes user menu choice. Sends the info to method PlayerMenuChoice in the class Menu.
             }
 
         }
+
+
+        private void ProgramActions(object[] userMenuChoice)
+        {
+
+
+            Console.WriteLine($"You've chosen {userMenuChoice[1]}\n");
+            switch (userMenuChoice[0])
+            {
+                //Character goes on adventure if user chooses the first option in the menu. 
+                case 1:
+
+                    ClearScreen();
+                    break;
+
+                //the player choses to look at character details.
+                case 2:
+
+                    ClearScreen();
+                    break;
+
+                case 3:
+
+                    ClearScreen();
+                    break;
+
+
+                case 4:
+                    
+                    break;
+
+                case 5:
+                    keepPlaying = false;  //End program
+                    break;
+
+                default:
+                    ClearScreen();
+                    break;
+
+            }
+
+        }
+
+
+
+
+
+
+
 
         private void AddMockData()
         {
             if (!DoesDbExist())
 
             {
-                
-
                 CreateDb();
                 CreateTable();
-                //AddTableData();
+                AddTableData();
             }
 
             else
             {
-                AddTableData();
-                //Console.WriteLine("Data allready exists");
+                Console.WriteLine("Data allready exists");
+                ClearScreen();
             }
 
 
@@ -68,7 +115,6 @@ namespace IvoFamilyTree.Utilities
             }
 
         }
-
 
 
         private bool DoesDbExist()
@@ -105,8 +151,6 @@ namespace IvoFamilyTree.Utilities
 
         private void AddTableData()
         {
-
-
             CreateData("Clint", "Eastwood", 0, 0, 1925);
             CreateData("Anna", "Eastwood", 0, 0, 1935);
             CreateData("Arnold", "Schwarzenegger", 0, 0, 1945);
@@ -127,18 +171,12 @@ namespace IvoFamilyTree.Utilities
             CreateData("Lucia", "Dos Santos", 12, 16, 1982);
             CreateData("Ben", "Spelling", 15, 1, 1982);
 
-
-
-
-            /*
-                Console.WriteLine($"Table {tableName} created");
-            */
+            Console.WriteLine("Added data to the table");
         }
 
 
         private void CreateData(string firstName, string lastName, int mother, int father, int birthYear)
         {
-
 
             using (var conn = new SqlConnection(connectionString))
             {
@@ -184,6 +222,21 @@ namespace IvoFamilyTree.Utilities
             }
 
             return dt;
+        }
+
+
+        private void ShowMenu()
+        {
+            Menu.ProgramMenu();
+        }
+
+
+        private void ClearScreen()
+        {
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+            Console.Clear();
+
         }
 
 
