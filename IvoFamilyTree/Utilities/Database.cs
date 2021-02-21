@@ -22,7 +22,6 @@ namespace IvoFamilyTree.Utilities
 
             while (keepPlaying)
             {
-
                 AddMockData();
                 keepPlaying = false;
                 ShowMenu(); //Calls method to show the main menu
@@ -39,29 +38,46 @@ namespace IvoFamilyTree.Utilities
             Console.WriteLine($"You've chosen {userMenuChoice[1]}\n");
             switch (userMenuChoice[0])
             {
-                //Character goes on adventure if user chooses the first option in the menu. 
-                case 1:
-                    GetPersonInfo(2);
+                 
+                case 1: //Show all names starting with certain letter.
+                    Console.Write("Please enter the first letter in first name: ");
+                    string letter = Console.ReadLine();
+                    letter = letter + "%";
+                    ShowAllNames(letter);
                     ClearScreen();
                     break;
 
-                //the user choses to look add person.
-                case 2:
+                
+                case 2: //the user choses to add a person.
                     AddPerson();
                     ClearScreen();
                     break;
 
-                case 3:
-
+                
+                case 3: //the user choses to delete a person
+                    ListAllPeople();
+                    Console.Write("Please enter the Id of the person you want to remove: ");
+                    int personId = Convert.ToInt32(Console.ReadLine());
+                    RemovePerson(personId);
                     ClearScreen();
                     break;
 
-
+                
                 case 4:
 
+                    ChangePerson(); //the user choses to change a person
+                    ClearScreen();
                     break;
 
                 case 5:
+                    ShowGrandParents();  //Show grandparents
+                    break;
+
+                case 6:
+                    keepPlaying = false;  //End program
+                    break;
+
+                case 7:
                     keepPlaying = false;  //End program
                     break;
 
@@ -72,7 +88,6 @@ namespace IvoFamilyTree.Utilities
             }
 
         }
-
 
 
 
@@ -205,18 +220,13 @@ namespace IvoFamilyTree.Utilities
                 conn.Open();
                 using (var command = new SqlCommand(sql, conn))
                 {
-
-
                     using (var adapter = new SqlDataAdapter(command))
                     {
                         adapter.Fill(dt);
                     }
-
                 }
                 conn.Close();
-
             }
-
             return dt;
         }
 
@@ -234,25 +244,300 @@ namespace IvoFamilyTree.Utilities
             Console.Write("Please enter the birth year of the added person: ");
             int birthYear = Convert.ToInt32(Console.ReadLine());
             AddData(firstName, lastName, mother, father, birthYear);
-            Console.Write("Mother is: ");
+            Console.WriteLine($"\nYou just added {firstName} {lastName}\n");
+
+            Console.Write("Mother is: \n");
             GetPersonInfo(mother);
+            Console.Write("\nFather is: \n");
+            GetPersonInfo(father);
+
+        }
+
+        private void ListAllPeople()
+        {
+
+            var sql = $"select id, firstName, lastName, birthYear from {databaseName}.[dbo].[{tableName}];";
+            var dt = new DataTable();
+            var connString = string.Format(connectionString, databaseName);
+
+            using (var conn = new SqlConnection(connString))
+
+            {
+                conn.Open();
+                using (var command = new SqlCommand(sql, conn))
+                {
+                    using (var adapter = new SqlDataAdapter(command))
+                    {
+                        adapter.Fill(dt);
+                    }
+                }
+                conn.Close();
+            }
+
+            foreach (DataRow dataRow in dt.Rows)
+            {
+
+                foreach (var item in dataRow.ItemArray)
+                {
+                    Console.WriteLine($"{item}");
+
+                }
+                Console.WriteLine("\n");
+            }
+
+        }
+
+        private void ChangePerson()
+        {
+            ListAllPeople();
+            Console.Write("Please enter the Id of the person you want to change: ");
+            int personId = Convert.ToInt32(Console.ReadLine());
+            Console.Clear();
+            Console.WriteLine("\nWhat would you like to change:\n");
+            Console.WriteLine("1. First name");
+            Console.WriteLine("2. Last name");
+            Console.WriteLine("3. Abort change");
+            Console.Write("\nPlease enter the menu number: ");
+            int changeId = Convert.ToInt32(Console.ReadLine());
 
 
+            Console.Clear();
+            if (changeId == 1)
+            {
+                Console.Write("Please enter new first name: ");
+                string newName = Console.ReadLine();
+                Console.Clear();
+                ChangeFirstName(personId, newName);
+
+            }
+            else if (changeId == 2)
+            {
+                Console.Write("Please enter new last name: ");
+                string newName = Console.ReadLine();
+                Console.Clear();
+                ChangeLastName(personId, newName);
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("Change aborted");
+            }
+        }
+
+
+
+        private void ChangeFirstName(int personId, string newName)
+        {
+
+            var sql = @$"UPDATE {databaseName}.[dbo].[{tableName}] 
+                          set FirstName = @newName
+                          WHERE id =@personId;";
+
+
+            var dt = new DataTable();
+            var connString = string.Format(connectionString, databaseName);
+            Console.Clear();
+            Console.WriteLine("You are about to change first name of the person below\n");
+            GetPersonInfo(personId);
+            Console.Write("\nDo you want to proceed? (Y/N)");
+            string answer = Console.ReadLine();
+
+            if (answer == "Y" || answer == "y")
+            {
+
+                using (var conn = new SqlConnection(connString))
+
+                {
+                    conn.Open();
+                    using (var command = new SqlCommand(sql, conn))
+                    {
+                        using (var adapter = new SqlDataAdapter(command))
+                        {
+                            command.Parameters.AddWithValue("@personId", personId);
+                            command.Parameters.AddWithValue("@newName", newName);
+                            adapter.Fill(dt);
+                        }
+                    }
+                    conn.Close();
+                }
+                Console.Clear();
+                Console.WriteLine("Name changed");
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("Name change aborted");
+
+            }
+
+        }
+
+        private void ChangeLastName(int personId, string newName)
+        {
+
+            var sql = @$"UPDATE {databaseName}.[dbo].[{tableName}] 
+                          set Lastname = @newName
+                          WHERE id =@personId;";
+
+
+            var dt = new DataTable();
+            var connString = string.Format(connectionString, databaseName);
+            Console.Clear();
+            Console.WriteLine("You are about to change last name of the person below\n");
+            GetPersonInfo(personId);
+            Console.Write("\nDo you want to proceed? (Y/N)");
+            string answer = Console.ReadLine();
+
+            if (answer == "Y" || answer == "y")
+            {
+
+                using (var conn = new SqlConnection(connString))
+
+                {
+                    conn.Open();
+                    using (var command = new SqlCommand(sql, conn))
+                    {
+                        using (var adapter = new SqlDataAdapter(command))
+                        {
+                            command.Parameters.AddWithValue("@personId", personId);
+                            command.Parameters.AddWithValue("@newName", newName);
+                            adapter.Fill(dt);
+                        }
+                    }
+                    conn.Close();
+                }
+                Console.Clear();
+                Console.WriteLine("Name changed");
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("Name change aborted");
+
+            }
 
         }
 
 
-        private void GetPersonInfo(int mother)
+        private void RemovePerson(int personId)
         {
 
-            var list = GetDataTable($"SELECT * FROM {databaseName}.[dbo].[{tableName}] WHERE ID = '{mother}'");
-            foreach (item in list)
+            var sql = $"DELETE FROM {databaseName}.[dbo].[{tableName}] WHERE id = @personId;";
+            var dt = new DataTable();
+            var connString = string.Format(connectionString, databaseName);
+            Console.Clear();
+            Console.WriteLine("The person below will be removed from the table: \n");
+            GetPersonInfo(personId);
+            Console.Write("\nDo you want to proceed? (Y/N)");
+            string answer = Console.ReadLine();
+
+            if (answer == "Y" || answer == "y")
             {
-                Console.WriteLine($"{item}");
+
+                using (var conn = new SqlConnection(connString))
+
+                {
+                    conn.Open();
+                    using (var command = new SqlCommand(sql, conn))
+                    {
+                        using (var adapter = new SqlDataAdapter(command))
+                        {
+                            command.Parameters.AddWithValue("@personId", personId);
+                            adapter.Fill(dt);
+                        }
+                    }
+                    conn.Close();
+                }
+                Console.Clear();
+                Console.WriteLine("Person removed");
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("Removal aborted");
+
+            }
+
+        }
+
+        private void GetPersonInfo(int personId)
+        {
+
+            var sql = $"select firstName, lastName, birthYear from {databaseName}.[dbo].[{tableName}] where ID = @personId;";
+
+            var dt = new DataTable();
+            var connString = string.Format(connectionString, databaseName);
+
+            using (var conn = new SqlConnection(connString))
+
+            {
+                conn.Open();
+                using (var command = new SqlCommand(sql, conn))
+                {
+                    using (var adapter = new SqlDataAdapter(command))
+                    {
+                        command.Parameters.AddWithValue("@personId", personId);
+                        adapter.Fill(dt);
+                    }
+                }
+                conn.Close();
             }
 
 
+            foreach (DataRow dataRow in dt.Rows)
+            {
+                foreach (var item in dataRow.ItemArray)
+                {
+                    Console.WriteLine(item);
+                }
+            }
+
         }
+
+
+        private void ShowAllNames(string letter)
+        {
+
+            var sql = $"select firstName, lastName, birthYear from {databaseName}.[dbo].[{tableName}] where firstName like @letter;";
+            var dt = new DataTable();
+            var connString = string.Format(connectionString, databaseName);
+
+            using (var conn = new SqlConnection(connString))
+
+            {
+                conn.Open();
+                using (var command = new SqlCommand(sql, conn))
+                {
+                    using (var adapter = new SqlDataAdapter(command))
+                    {
+                        command.Parameters.AddWithValue("@letter", letter);
+                        adapter.Fill(dt);
+                    }
+                }
+                conn.Close();
+            }
+
+            foreach (DataRow dataRow in dt.Rows)
+            {
+                foreach (var item in dataRow.ItemArray)
+                {
+                    Console.WriteLine(item);
+                }
+            }
+
+        }
+
+        private void ShowGrandParents()
+        {
+            var sql = $"select Id, firstName, lastName, birthYear from {databaseName}.[dbo].[{tableName}] where mother = 0;";
+            var list = GetDataTable(sql);
+
+            foreach (DataRow row in list.Rows)
+            {
+                Console.WriteLine($"{row["Id"]}. {row["firstName"].ToString().Trim()}, {row["lastName"].ToString().Trim()}, birth year: {row["birthYear"]}");
+            }
+        }
+
 
         private void ShowMenu()
         {

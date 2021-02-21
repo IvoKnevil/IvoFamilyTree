@@ -11,7 +11,7 @@ namespace IvoFamilyTree.Utilities
     class Menu
     {
 
-        private static List<string> programMenu = new List<string>() { "Show all names starting with chosen letter", "Add person", "Remove person", "Change person", "Exit program" };
+        private static List<string> programMenu = new List<string>() { "Show all names starting with chosen letter", "Add person", "Remove person", "Change person", "Show grandparents", "Show kids", "Exit program" };
         private static int userChoice;
         private static string userInputDescription;
         private static string inputText;
@@ -26,6 +26,8 @@ namespace IvoFamilyTree.Utilities
                 Console.WriteLine($"{i + 1}. {programMenu[i]}");
             }
         }
+
+
 
 
         static public object[] UserMenuChoice() //method reads users choice (choice=int, choice description=string), adds these to the array MenuChoiceToReturn. The array is sent back to the Database class. 
@@ -62,6 +64,9 @@ namespace IvoFamilyTree.Utilities
             return menuChoiceToReturn;
 
         }
+
+
+
 
 
 
